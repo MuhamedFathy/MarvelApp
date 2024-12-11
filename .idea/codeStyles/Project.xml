@@ -20,6 +20,7 @@
         <package name="" withSubpackages="true" static="true" />
       </value>
     </option>
+    <option name="RIGHT_MARGIN" value="150" />
     <option name="KEEP_LINE_BREAKS" value="false" />
     <option name="KEEP_BLANK_LINES_IN_DECLARATIONS" value="1" />
     <option name="KEEP_BLANK_LINES_IN_CODE" value="1" />

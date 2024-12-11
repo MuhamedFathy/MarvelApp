@@ -1,8 +1,7 @@
 package com.github.marvelapp.presentation.composable.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -12,19 +11,20 @@ import com.github.marvelapp.presentation.composable.SearchScreen
 
 @Composable
 fun AppNavHost(
-    modifier: Modifier = Modifier,
-    navController: NavHostController = rememberNavController(),
     startDestination: String = NavRoutes.CharactersScreen.route
 ) {
+    val navController = rememberNavController()
+
     NavHost(
-        modifier = modifier,
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End) }
     ) {
         composable(route = NavRoutes.CharactersScreen.route) {
-            CharactersScreen(
-                itemCallback = { navController.navigate(NavRoutes.CharacterDetailsScreen.route) }
-            )
+            CharactersScreen(navController = navController)
         }
 
         composable(route = NavRoutes.CharacterDetailsScreen.route) {
@@ -32,7 +32,7 @@ fun AppNavHost(
         }
 
         composable(route = NavRoutes.SearchScreen.route) {
-            SearchScreen()
+            SearchScreen(navController = navController)
         }
     }
 }

@@ -67,6 +67,7 @@ dependencies {
 
     // Image loading
     implementation(libs.coil.compose)
+    implementation(libs.coil.network)
 
     // Testing
     testImplementation(libs.junit)
