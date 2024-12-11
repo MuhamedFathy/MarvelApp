@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -61,11 +63,16 @@ fun CharactersScreen(
             item { CharacterItem("3-D Man", "https://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_incredible.jpg") }
             item { CharacterItem("A-Bomb (HAS)", "https://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16/landscape_incredible.jpg") }
             item { CharacterItem("A.I.M", "https://i.annihil.us/u/prod/marvel/i/mg/6/20/52602f21f29ec/landscape_incredible.jpg") }
-            item { CharacterItem("Abomination", "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg") }
+            item {
+                CharacterItem(
+                    "Abomination (Emil Blonsky)",
+                    "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg"
+                )
+            }
             item { CharacterItem("3-D Man", "https://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_incredible.jpg") }
             item { CharacterItem("A-Bomb (HAS)", "https://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16/landscape_incredible.jpg") }
             item { CharacterItem("A.I.M", "https://i.annihil.us/u/prod/marvel/i/mg/6/20/52602f21f29ec/landscape_incredible.jpg") }
-            item { CharacterItem("Abomination", "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg") }
+            item { CharacterItem("Abomination dfdfjdfj dfj", "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg") }
         }
 
         Toolbar(navController)
@@ -110,23 +117,25 @@ fun CharacterItem(
         Text(
             modifier = Modifier
                 .align(Alignment.BottomStart)
+                .widthIn(min = 200.dp)
                 .padding(horizontal = 20.dp, vertical = 30.dp)
                 .drawBehind {
                     val path = Path().apply {
                         val width = size.width
                         val height = size.height
-                        moveTo(width * 0.1f, 0f) // Top-left corner (shortened)
-                        lineTo(width, 0f) // Top-right corner
+                        moveTo(width * 0.06f, 0f) // Top-left corner (shortened)
+                        lineTo(width - 20f, 0f) // Top-right corner
                         lineTo(width * 0.9f, height) // Bottom-right corner (shortened)
                         lineTo(0f, height) // Bottom-left corner
                         close()
                     }
                     drawPath(path, color = Color.White)
                 }
-                .padding(horizontal = 14.dp, vertical = 4.dp),
+                .padding(start = 20.dp, end = 25.dp, top = 4.dp, bottom = 4.dp),
             text = title,
             color = Color.Black,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center
         )
     }
 }
