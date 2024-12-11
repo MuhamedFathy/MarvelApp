@@ -1,11 +1,13 @@
-package com.github.marvelapp
+package com.github.marvelapp.presentation.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.github.marvelapp.ui.theme.MarvelAppTheme
+import com.github.marvelapp.presentation.theme.MarvelAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
