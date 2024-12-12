@@ -93,7 +93,8 @@ fun CharactersScreen(
                 ) {
                     CharacterItem(
                         item = pagingData[it],
-                        itemCallback = {
+                        itemCallback = { uiModel ->
+                            charactersViewModel.openSelectedCharacter(uiModel)
                             navController?.navigate(NavRoutes.CharacterDetailsScreen.route)
                         }
                     )
@@ -126,6 +127,8 @@ fun LazyItemScope.CharacterItem(
     item: CharacterUiModel?,
     itemCallback: Consumer<CharacterUiModel?>? = null
 ) {
+    val context = LocalContext.current
+    val imageBuilder = remember { ImageRequest.Builder(context) }
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -140,7 +143,7 @@ fun LazyItemScope.CharacterItem(
 
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
-            model = ImageRequest.Builder(LocalContext.current)
+            model = imageBuilder
                 .data(item?.thumbnail)
                 .crossfade(true)
                 .build(),

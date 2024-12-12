@@ -25,6 +25,9 @@ class CharactersViewModel @Inject constructor(
     private val _searchDataState = MutableStateFlow<List<CharacterUiModel>>(value = emptyList())
     val searchDataState = _searchDataState.asStateFlow()
 
+    private val _selectedCharacter = MutableStateFlow<CharacterUiModel?>(value = null)
+    val selectedCharacter = _selectedCharacter.asStateFlow()
+
     private var hasLoadedData = false
 
     fun getMarvelCharacters() {
@@ -45,6 +48,10 @@ class CharactersViewModel @Inject constructor(
         } else {
             emptyList()
         }
+    }
+
+    fun openSelectedCharacter(character: CharacterUiModel?) {
+        _selectedCharacter.value = character
     }
 
     fun resetSearchData() {
