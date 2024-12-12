@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,8 +18,14 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        android.buildFeatures.buildConfig = true
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val apiKey = gradleLocalProperties(rootDir, providers = providers).getProperty("PUBLIC_API_KEY")
+        val privateKey = gradleLocalProperties(rootDir, providers = providers).getProperty("PRIVATE_API_KEY")
+        buildConfigField("String", "PUBLIC_API_KEY", apiKey)
+        buildConfigField("String", "PRIVATE_API_KEY", privateKey)
     }
 
     buildTypes {
@@ -64,6 +72,14 @@ dependencies {
     // Injection
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
+
+    // Image loading
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
+
+    // Paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 
     // Testing
     testImplementation(libs.junit)
