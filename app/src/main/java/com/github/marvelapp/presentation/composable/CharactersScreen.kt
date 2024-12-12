@@ -11,13 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,12 +35,17 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.github.marvelapp.R
-import com.github.marvelapp.core.typealiases.Action
+import com.github.marvelapp.core.typealiases.Consumer
+import com.github.marvelapp.presentation.activity.MainActivity
+import com.github.marvelapp.presentation.composable.navigation.NavRoutes
 import com.github.marvelapp.presentation.theme.MarvelAppTheme
+import com.github.marvelapp.presentation.viewmodel.uimodel.CharacterUiModel
 
 @Composable
 fun CharactersScreen(
@@ -44,35 +53,68 @@ fun CharactersScreen(
 ) {
     val windowInsets = WindowInsets.systemBars
     val innerPadding = windowInsets.asPaddingValues()
+    val context = LocalContext.current as MainActivity
+    val charactersViewModel = context.charactersViewModel
+    val pagingData = charactersViewModel.charactersPagingState.collectAsLazyPagingItems()
+
+    LaunchedEffect(key1 = Unit) {
+        charactersViewModel.getMarvelCharacters()
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color.Black)
+            .background(color = Color.Black),
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            item {
-                Spacer(
-                    Modifier
-                        .padding(innerPadding)
-                        .height(64.dp)
-                )
+
+        if (pagingData.itemCount == 0) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .padding(vertical = 20.dp)
+                    .align(Alignment.Center)
+                    .size(50.dp),
+                color = Color.White
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                item {
+                    Spacer(
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .height(64.dp)
+                    )
+                }
+
+                items(
+                    count = pagingData.itemCount,
+                    key = { index -> pagingData.peek(index)?.id ?: "null at $index" },
+                ) {
+                    CharacterItem(
+                        item = pagingData[it],
+                        itemCallback = {
+                            navController?.navigate(NavRoutes.CharacterDetailsScreen.route)
+                        }
+                    )
+                }
+
+                if (pagingData.loadState.append == LoadState.Loading) {
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .padding(vertical = 20.dp)
+                                    .size(40.dp),
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
             }
-            item { CharacterItem("3-D Man", "https://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_incredible.jpg") }
-            item { CharacterItem("A-Bomb (HAS)", "https://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16/landscape_incredible.jpg") }
-            item { CharacterItem("A.I.M", "https://i.annihil.us/u/prod/marvel/i/mg/6/20/52602f21f29ec/landscape_incredible.jpg") }
-            item {
-                CharacterItem(
-                    "Abomination (Emil Blonsky)",
-                    "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg"
-                )
-            }
-            item { CharacterItem("3-D Man", "https://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/landscape_incredible.jpg") }
-            item { CharacterItem("A-Bomb (HAS)", "https://i.annihil.us/u/prod/marvel/i/mg/3/20/5232158de5b16/landscape_incredible.jpg") }
-            item { CharacterItem("A.I.M", "https://i.annihil.us/u/prod/marvel/i/mg/6/20/52602f21f29ec/landscape_incredible.jpg") }
-            item { CharacterItem("Abomination dfdfjdfj dfj", "https://i.annihil.us/u/prod/marvel/i/mg/9/50/4ce18691cbf04/landscape_incredible.jpg") }
         }
 
         Toolbar(navController)
@@ -80,10 +122,9 @@ fun CharactersScreen(
 }
 
 @Composable
-fun CharacterItem(
-    title: String,
-    url: String,
-    itemCallback: Action? = null
+fun LazyItemScope.CharacterItem(
+    item: CharacterUiModel?,
+    itemCallback: Consumer<CharacterUiModel?>? = null
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -93,13 +134,14 @@ fun CharacterItem(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple()
-            ) { itemCallback?.invoke() }
+            ) { itemCallback?.invoke(item) }
+            .animateItem()
     ) {
 
         AsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(url)
+                .data(item?.thumbnail)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.marvel_logo),
@@ -132,7 +174,7 @@ fun CharacterItem(
                     drawPath(path, color = Color.White)
                 }
                 .padding(start = 20.dp, end = 25.dp, top = 4.dp, bottom = 4.dp),
-            text = title,
+            text = item?.name.orEmpty(),
             color = Color.Black,
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
