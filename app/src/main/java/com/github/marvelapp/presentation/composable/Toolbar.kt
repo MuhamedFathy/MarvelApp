@@ -38,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.github.marvelapp.R
+import com.github.marvelapp.core.typealiases.Consumer
 import com.github.marvelapp.presentation.composable.navigation.NavRoutes
 
 @Composable
@@ -74,7 +75,8 @@ fun Toolbar(
 
 @Composable
 fun SearchToolbar(
-    navController: NavHostController? = null
+    navController: NavHostController? = null,
+    textFieldChangesCallback: Consumer<String>? = null
 ) {
     var textFieldValue by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -92,6 +94,7 @@ fun SearchToolbar(
                     .focusRequester(focusRequester),
                 value = textFieldValue,
                 onValueChange = {
+                    textFieldChangesCallback?.invoke(it)
                     textFieldValue = it
                 },
                 shape = RoundedCornerShape(8.dp),

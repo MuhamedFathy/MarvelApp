@@ -22,6 +22,9 @@ class CharactersViewModel @Inject constructor(
     private val _charactersPagingState = MutableStateFlow<PagingData<CharacterUiModel>>(value = PagingData.empty())
     val charactersPagingState = _charactersPagingState.asStateFlow()
 
+    private val _searchDataState = MutableStateFlow<List<CharacterUiModel>>(value = emptyList())
+    val searchDataState = _searchDataState.asStateFlow()
+
     private var hasLoadedData = false
 
     fun getMarvelCharacters() {
@@ -34,5 +37,17 @@ class CharactersViewModel @Inject constructor(
                     _charactersPagingState.value = pagingData.map { it.toUiModel() }
                 }
         }
+    }
+
+    fun findHeroesByName(name: String, items: List<CharacterUiModel>) {
+        _searchDataState.value = if (name.isNotBlank()) {
+            items.filter { it.name.contains(name, ignoreCase = true) }
+        } else {
+            emptyList()
+        }
+    }
+
+    fun resetSearchData() {
+        _searchDataState.value = emptyList()
     }
 }
