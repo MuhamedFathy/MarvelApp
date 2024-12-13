@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.github.marvelapp.domain.entity.CharacterEntity
 import com.github.marvelapp.domain.holder.DataHolder
 import com.github.marvelapp.domain.interactor.GetMarvelCharacterProductUseCase
+import com.github.marvelapp.presentation.viewmodel.uimodel.CharacterUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +16,6 @@ import javax.inject.Inject
 class CharactersDetailsViewModel @Inject constructor(
     private val getMarvelCharacterProductUseCase: GetMarvelCharacterProductUseCase
 ) : ViewModel() {
-
 
     private val _comicsDataState = MutableStateFlow<DataHolder<List<CharacterEntity>?>>(value = DataHolder.Loading)
     val comicsDataState = _comicsDataState.asStateFlow()
@@ -29,6 +29,8 @@ class CharactersDetailsViewModel @Inject constructor(
     private val _eventsDataState = MutableStateFlow<DataHolder<List<CharacterEntity>?>>(value = DataHolder.Loading)
     val eventsDataState = _eventsDataState.asStateFlow()
 
+    private val _selectedProduct = MutableStateFlow<Pair<List<CharacterUiModel>, Int>>(value = Pair(emptyList(), 0))
+    val selectedProduct = _selectedProduct.asStateFlow()
 
     fun getCharacterComics(characterId: Long) {
         viewModelScope.launch {
@@ -64,5 +66,16 @@ class CharactersDetailsViewModel @Inject constructor(
                     _eventsDataState.value = dataHolder
                 }
         }
+    }
+
+    fun openSelectedProduct(products: List<CharacterUiModel>, selectedIndex: Int) {
+        _selectedProduct.value = Pair(products, selectedIndex)
+    }
+
+    fun resetData() {
+        _comicsDataState.value = DataHolder.Loading
+        _seriesDataState.value = DataHolder.Loading
+        _storiesDataState.value = DataHolder.Loading
+        _eventsDataState.value = DataHolder.Loading
     }
 }

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -29,9 +28,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
@@ -48,7 +50,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -69,11 +70,11 @@ import java.util.Locale
 
 @Composable
 fun CharacterDetailsScreen(
-    charactersDetailsViewModel: CharactersDetailsViewModel = hiltViewModel(),
     navController: NavHostController? = null
 ) {
     val context = LocalContext.current as MainActivity
     val charactersViewModel = context.charactersViewModel
+    val charactersDetailsViewModel = context.charactersDetailsViewModel
     val character by charactersViewModel.selectedCharacter.collectAsStateWithLifecycle()
     val imageBuilder = remember { ImageRequest.Builder(context) }
     val scrollState = rememberScrollState()
@@ -84,6 +85,13 @@ fun CharacterDetailsScreen(
         charactersDetailsViewModel.getCharacterStories(character?.id ?: return@LaunchedEffect)
         charactersDetailsViewModel.getCharacterEvents(character?.id ?: return@LaunchedEffect)
     }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            charactersDetailsViewModel.resetData()
+        }
+    }
+
 
     Box(
         modifier = Modifier
@@ -193,6 +201,7 @@ fun CharactersProducts(
     val seriesDataState by charactersDetailsViewModel.seriesDataState.collectAsStateWithLifecycle()
     val storiesDataState by charactersDetailsViewModel.storiesDataState.collectAsStateWithLifecycle()
     val eventsDataState by charactersDetailsViewModel.eventsDataState.collectAsStateWithLifecycle()
+    var showImagesDialog by remember { mutableStateOf(false) }
 
     if (comicsDataState is DataHolder.Loading) {
         Spacer(modifier = Modifier.height(22.dp))
@@ -212,7 +221,11 @@ fun CharactersProducts(
         val comics = (comicsDataState as DataHolder.Success).data?.map { it.toUiModel() }.orEmpty()
         CharacterProductsSection(
             title = R.string.details_page_comics,
-            products = comics
+            products = comics,
+            itemCallback = { index ->
+                charactersDetailsViewModel.openSelectedProduct(products = comics, selectedIndex = index)
+                showImagesDialog = true
+            }
         )
     }
 
@@ -234,7 +247,11 @@ fun CharactersProducts(
         val series = (seriesDataState as DataHolder.Success).data?.map { it.toUiModel() }.orEmpty()
         CharacterProductsSection(
             title = R.string.details_page_series,
-            products = series
+            products = series,
+            itemCallback = { index ->
+                charactersDetailsViewModel.openSelectedProduct(products = series, selectedIndex = index)
+                showImagesDialog = true
+            }
         )
     }
 
@@ -256,7 +273,11 @@ fun CharactersProducts(
         val stories = (storiesDataState as DataHolder.Success).data?.map { it.toUiModel() }.orEmpty()
         CharacterProductsSection(
             title = R.string.details_page_stories,
-            products = stories
+            products = stories,
+            itemCallback = { index ->
+                charactersDetailsViewModel.openSelectedProduct(products = stories, selectedIndex = index)
+                showImagesDialog = true
+            }
         )
     }
 
@@ -278,7 +299,18 @@ fun CharactersProducts(
         val events = (eventsDataState as DataHolder.Success).data?.map { it.toUiModel() }.orEmpty()
         CharacterProductsSection(
             title = R.string.details_page_events,
-            products = events
+            products = events,
+            itemCallback = { index ->
+                charactersDetailsViewModel.openSelectedProduct(products = events, selectedIndex = index)
+                showImagesDialog = true
+            }
+        )
+    }
+
+    if (showImagesDialog) {
+        ImagesGalleryDialog(
+            onDismiss = { showImagesDialog = false },
+            closeCallback = { showImagesDialog = false }
         )
     }
 }
@@ -286,7 +318,8 @@ fun CharactersProducts(
 @Composable
 fun CharacterProductsSection(
     @StringRes title: Int,
-    products: List<CharacterUiModel>
+    products: List<CharacterUiModel>,
+    itemCallback: Consumer<Int>
 ) {
     if (products.isEmpty()) return
 
@@ -310,8 +343,11 @@ fun CharacterProductsSection(
     ) {
         item { Spacer(modifier = Modifier) }
 
-        items(items = products, key = { it.id }) {
-            CharacterProductItem(it)
+        items(count = products.size, key = { index -> products[index].id }) { index ->
+            CharacterProductItem(
+                item = products[index],
+                itemCallback = { itemCallback(index) }
+            )
         }
 
         item { Spacer(modifier = Modifier) }
@@ -320,7 +356,8 @@ fun CharacterProductsSection(
 
 @Composable
 fun CharacterProductItem(
-    item: CharacterUiModel
+    item: CharacterUiModel,
+    itemCallback: Consumer<CharacterUiModel>
 ) {
     val context = LocalContext.current
     val imageBuilder = remember { ImageRequest.Builder(context) }
@@ -332,7 +369,11 @@ fun CharacterProductItem(
         AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp),
+                .height(150.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(color = Color.White),
+                ) { itemCallback.invoke(item) },
             model = imageBuilder
                 .data(item.thumbnail)
                 .crossfade(true)
