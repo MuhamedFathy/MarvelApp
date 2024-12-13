@@ -1,3 +1,12 @@
 <resources>
   <string name="app_name">MarvelApp</string>
+  <string name="search_page_field_hint">Search</string>
+  <string name="search_page_button_cancel">Cancel</string>
+  <string name="details_page_name">Name</string>
+  <string name="details_page_description">Description</string>
+  <string name="details_page_comics">Comics</string>
+  <string name="details_page_series">Series</string>
+  <string name="details_page_stories">Stories</string>
+  <string name="details_page_events">Events</string>
+  <string name="details_page_related_links">Related links</string>
 </resources>
