@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.github.marvelapp.presentation.composable.navigation.AppNavHost
 import com.github.marvelapp.presentation.theme.MarvelAppTheme
+import com.github.marvelapp.presentation.viewmodel.CharactersDetailsViewModel
 import com.github.marvelapp.presentation.viewmodel.CharactersViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -15,6 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     val charactersViewModel by viewModels<CharactersViewModel>()
+    val charactersDetailsViewModel by viewModels<CharactersDetailsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
