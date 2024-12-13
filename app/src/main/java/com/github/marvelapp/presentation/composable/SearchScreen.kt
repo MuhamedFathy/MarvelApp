@@ -84,7 +84,8 @@ fun SearchScreen(
             ) {
                 SearchItem(
                     item = searchData[it],
-                    itemCallback = {
+                    itemCallback = { uiModel ->
+                        charactersViewModel.openSelectedCharacter(uiModel)
                         navController?.navigate(NavRoutes.CharacterDetailsScreen.route)
                     }
                 )
@@ -103,6 +104,9 @@ fun LazyItemScope.SearchItem(
     item: CharacterUiModel?,
     itemCallback: Consumer<CharacterUiModel?>? = null
 ) {
+    val context = LocalContext.current
+    val imageBuilder = remember { ImageRequest.Builder(context) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,12 +119,11 @@ fun LazyItemScope.SearchItem(
     ) {
         AsyncImage(
             modifier = Modifier.size(80.dp),
-            model = ImageRequest.Builder(LocalContext.current)
+            model = imageBuilder
                 .data(item?.thumbnail)
                 .crossfade(true)
                 .build(),
-            placeholder = painterResource(R.drawable.marvel_logo),
-            error = painterResource(R.drawable.marvel_logo),
+            error = painterResource(R.drawable.marvel_mini_logo),
             contentScale = ContentScale.Crop,
             contentDescription = null
         )

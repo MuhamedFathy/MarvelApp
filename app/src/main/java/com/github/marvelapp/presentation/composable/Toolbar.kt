@@ -6,10 +6,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.twotone.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,6 +21,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -33,6 +36,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -100,7 +104,7 @@ fun SearchToolbar(
                 shape = RoundedCornerShape(8.dp),
                 label = {
                     Text(
-                        "Search",
+                        stringResource(R.string.search_page_field_hint),
                         color = Color.Black.copy(alpha = 0.5f)
                     )
                 },
@@ -130,10 +134,38 @@ fun SearchToolbar(
                         indication = ripple()
                     ) { navController?.popBackStack() }
                     .padding(8.dp),
-                text = "Cancel",
+                text = stringResource(R.string.search_page_button_cancel),
                 color = Color.Red.copy(alpha = 0.7f),
                 textAlign = TextAlign.Center
             )
+        }
+    )
+}
+
+@Composable
+fun CollapsedToolbar(
+    navController: NavHostController? = null
+) {
+    TopAppBar(
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent,
+            scrolledContainerColor = Color.Transparent
+        ),
+        title = {},
+        navigationIcon = {
+            IconButton(onClick = { navController?.popBackStack() }) {
+                Icon(
+                    modifier = Modifier.offset(x = 0.1.dp, y = (-0.2).dp),
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    tint = Color.Black.copy(alpha = 0.4f),
+                    contentDescription = "Back"
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    tint = Color.White,
+                    contentDescription = "Back"
+                )
+            }
         }
     )
 }

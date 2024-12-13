@@ -28,7 +28,7 @@ fun AppNavHost(
         }
 
         composable(route = NavRoutes.CharacterDetailsScreen.route) {
-            CharacterDetailsScreen()
+            CharacterDetailsScreen(navController = navController)
         }
 
         composable(route = NavRoutes.SearchScreen.route) {

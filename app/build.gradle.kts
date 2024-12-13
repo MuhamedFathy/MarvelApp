@@ -72,6 +72,7 @@ dependencies {
     // Injection
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.hilt.compose)
 
     // Image loading
     implementation(libs.coil.compose)
