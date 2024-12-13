@@ -6,6 +6,7 @@ import com.github.marvelapp.domain.entity.UrlEntity
 fun CharacterEntity.toUiModel() = CharacterUiModel(
     id = id,
     name = name,
+    title = title,
     description = description,
     thumbnail = thumbnail,
     urls = urls.map { it.toUiModel() }

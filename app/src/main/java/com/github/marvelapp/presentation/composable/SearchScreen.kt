@@ -123,8 +123,7 @@ fun LazyItemScope.SearchItem(
                 .data(item?.thumbnail)
                 .crossfade(true)
                 .build(),
-            placeholder = painterResource(R.drawable.marvel_logo),
-            error = painterResource(R.drawable.marvel_logo),
+            error = painterResource(R.drawable.marvel_mini_logo),
             contentScale = ContentScale.Crop,
             contentDescription = null
         )

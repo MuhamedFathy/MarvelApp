@@ -147,7 +147,6 @@ fun LazyItemScope.CharacterItem(
                 .data(item?.thumbnail)
                 .crossfade(true)
                 .build(),
-            placeholder = painterResource(R.drawable.marvel_logo),
             error = painterResource(R.drawable.marvel_logo),
             contentScale = ContentScale.Crop,
             contentDescription = null

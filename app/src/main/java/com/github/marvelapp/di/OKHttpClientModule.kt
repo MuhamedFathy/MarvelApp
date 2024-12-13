@@ -23,9 +23,9 @@ class OKHttpClientModule {
         marvelApiInterceptor: MarvelApiInterceptor,
         loggingInterceptor: HttpLoggingInterceptor,
     ): OkHttpClient = Builder()
-        .connectTimeout(20, SECONDS)
-        .readTimeout(30, SECONDS)
-        .writeTimeout(20, SECONDS)
+        .connectTimeout(60, SECONDS)
+        .readTimeout(60, SECONDS)
+        .writeTimeout(60, SECONDS)
         .retryOnConnectionFailure(true)
         .addInterceptor(marvelApiInterceptor)
         .addInterceptor(loggingInterceptor)

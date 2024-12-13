@@ -4,10 +4,13 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
+import com.github.marvelapp.data.extension.toFlow
 import com.github.marvelapp.data.model.mapper.toEntity
 import com.github.marvelapp.data.network.api.MarvelAPI
 import com.github.marvelapp.data.source.MarvelCharactersPagingSource
 import com.github.marvelapp.domain.entity.CharacterEntity
+import com.github.marvelapp.domain.exception.DataRetrievingFailException
+import com.github.marvelapp.domain.holder.DataHolder
 import com.github.marvelapp.domain.repository.MarvelCharactersRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -31,5 +34,13 @@ class MarvelCharactersRepositoryImpl @Inject constructor(
             .flow
             .catch { it.printStackTrace() }
             .map { pagingData -> pagingData.map { it.toEntity() } }
+    }
+
+    override suspend fun getCharacterProducts(characterId: Long, type: String): Flow<DataHolder<List<CharacterEntity>?>> {
+        return marvelAPI.getCharacterProducts(characterId, type)
+            .toFlow(
+                mapBody = { it?.data?.characters?.map { characterResponse -> characterResponse.toEntity() } },
+                mapError = { DataRetrievingFailException() }
+            )
     }
 }
