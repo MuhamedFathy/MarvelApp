@@ -30,9 +30,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.HtmlCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -137,7 +139,7 @@ fun DescriptionSection(description: String?) {
     Spacer(modifier = Modifier.height(10.dp))
 
     Text(
-        text = description,
+        text = buildAnnotatedString { append(HtmlCompat.fromHtml(description, HtmlCompat.FROM_HTML_MODE_COMPACT)) },
         style = MaterialTheme.typography.bodyLarge,
         color = Color.White
     )
